@@ -32,20 +32,23 @@
             android:src="@drawable/ic_brush"
             />
         <SeekBar
-            android:id="@+id/sizeBar"
+            android:id="@+id/brushSizeSeekBar"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:layout_margin="8dp" />
+            android:layout_margin="8dp"
+            android:max="50"
+            android:progress="10"/>
 
         <ImageButton
-            android:contentDescription="@string/save_button_text"
-            android:id="@+id/saveButton"
+            android:contentDescription="@string/clear_button_text"
+            android:id="@+id/clearCanvasButton"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:src="@drawable/ic_save"
-            android:background="?attr/selectableItemBackgroundBorderless" />
+            android:src="@drawable/ic_clear"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_marginStart="8dp" />
 
         <ImageButton
             android:contentDescription="@string/load_button_text"
@@ -55,6 +58,14 @@
             android:src="@drawable/ic_load"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:layout_marginStart="8dp" />
+
+        <ImageButton
+            android:contentDescription="@string/save_button_text"
+            android:id="@+id/saveButton"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/ic_save"
+            android:background="?attr/selectableItemBackgroundBorderless" />
     </LinearLayout>
 
     <HorizontalScrollView

@@ -4,4 +4,5 @@
     <string name="load_button_text">Загрузить изображение</string>
     <string name="save_button_text">Сохранить изображение</string>
     <string name="brush_icon_text">Размер кисти</string>
+    <string name="clear_button_text">Очистить рисунок</string>
 </resources>
