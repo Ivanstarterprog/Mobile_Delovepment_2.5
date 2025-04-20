@@ -1,6 +1,11 @@
 package com.example.mobiledelovepment25
+
 import android.content.Context
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Path
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
@@ -45,11 +50,13 @@ class DrawingView @JvmOverloads constructor(
                 lastX = x
                 lastY = y
             }
+
             MotionEvent.ACTION_MOVE -> {
                 drawPath.quadTo(lastX, lastY, (x + lastX) / 2, (y + lastY) / 2)
                 lastX = x
                 lastY = y
             }
+
             MotionEvent.ACTION_UP -> {
                 canvasDraw?.drawPath(drawPath, drawPaint)
                 drawPath.reset()

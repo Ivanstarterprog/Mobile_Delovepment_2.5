@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
+import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.SeekBar
@@ -34,62 +35,79 @@ class MainActivity : AppCompatActivity() {
         addColorButton(Color.BLACK)
     }
 
-    private fun setListeners(){
+    private fun setListeners() {
         setBrushSizeListener()
         setFileButtonsListeners()
     }
 
-    private fun setBrushSizeListener(){
+    private fun setBrushSizeListener() {
         binding.apply {
-            binding.brushSizeSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+            binding.brushSizeSeekBar.setOnSeekBarChangeListener(object :
+                SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(
+                    seekBar: SeekBar?,
+                    progress: Int,
+                    fromUser: Boolean
+                ) {
                     binding.drawingView.setBrushSize(progress.toFloat())
                 }
+
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {}
                 override fun onStopTrackingTouch(seekBar: SeekBar?) {}
             })
         }
     }
 
-    private fun setFileButtonsListeners(){
+    private fun setFileButtonsListeners() {
         binding.apply {
-            val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-                uri?.let {
-                    val inputStream = contentResolver.openInputStream(uri)
-                    val bitmap = BitmapFactory.decodeStream(inputStream)
-                    drawingView.setBackgroundBitmap(bitmap)
+            val pickImageLauncher =
+                registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+                    uri?.let {
+                        val inputStream = contentResolver.openInputStream(uri)
+                        val bitmap = BitmapFactory.decodeStream(inputStream)
+                        drawingView.setBackgroundBitmap(bitmap)
+                    }
                 }
-            }
 
             loadButton.setOnClickListener {
                 pickImageLauncher.launch("image/*")
             }
 
 
-            val saveImageLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument("image/png")) { uri ->
-                uri?.let {
-                    try {
-                        val outputStream = contentResolver.openOutputStream(uri)
-                        if (outputStream != null) {
-                            drawingView.getBitmap()?.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+            val saveImageLauncher =
+                registerForActivityResult(ActivityResultContracts.CreateDocument("image/png")) { uri ->
+                    uri?.let {
+                        try {
+                            val outputStream = contentResolver.openOutputStream(uri)
+                            if (outputStream != null) {
+                                drawingView.getBitmap()
+                                    ?.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                            }
+                            outputStream?.close()
+                            Toast.makeText(
+                                this@MainActivity,
+                                "Шедевр сохранён!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } catch (e: Exception) {
+                            Toast.makeText(
+                                this@MainActivity,
+                                "Слишком круто, не могу сохранить",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
-                        outputStream?.close()
-                        Toast.makeText(applicationContext, "Шедевр сохранён!", Toast.LENGTH_SHORT).show()
-                    } catch (e: Exception) {
-                        Toast.makeText(applicationContext, "Слишком круто, не могу сохранить", Toast.LENGTH_SHORT).show()
                     }
                 }
-            }
 
             saveButton.setOnClickListener {
                 saveImageLauncher.launch("drawing_${System.currentTimeMillis()}.png")
             }
 
-            addColorButton.setOnClickListener{
+            addColorButton.setOnClickListener {
                 showColorPickerDialog()
             }
 
-            clearCanvasButton.setOnClickListener{
+            clearCanvasButton.setOnClickListener {
                 drawingView.clearCanvas()
             }
         }
@@ -100,7 +118,8 @@ class MainActivity : AppCompatActivity() {
             .setTitle("Выберите цвет")
             .setColorListener { color, colorHex ->
                 addColorButton(color)
-                Toast.makeText(this, "Выбран цвет: $colorHex", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, "Выбран цвет: $colorHex", Toast.LENGTH_SHORT)
+                    .show()
             }
             .setPositiveButton("OK")
             .build()
@@ -122,10 +141,22 @@ class MainActivity : AppCompatActivity() {
                 setOnClickListener {
                     drawingView.setColor(color)
                 }
+                setOnLongClickListener { view ->
+                    Toast.makeText(
+                        this@MainActivity,
+                        "Цвет удалён",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    (view.parent as? ViewGroup)?.removeView(view)
+                    addedColors.remove(color)
+
+                    return@setOnLongClickListener true
+                }
             }
             drawingView.setColor(color)
             colorButtonsContainer.addView(colorButton, colorButtonsContainer.childCount - 1)
         }
     }
-    fun Int.dpToPx(): Int = (this * Resources.getSystem().displayMetrics.density).toInt()
+
+    private fun Int.dpToPx(): Int = (this * Resources.getSystem().displayMetrics.density).toInt()
 }
